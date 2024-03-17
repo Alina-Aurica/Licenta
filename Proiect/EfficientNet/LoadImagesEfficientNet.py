@@ -42,7 +42,7 @@ val_dataset = CustomImageDataset(val_data, transform=transform)
 test_dataset = CustomImageDataset(test_data, transform=transform)
 overfit_dataset = CustomImageDataset(overfit_data, transform=transform)
 
-batch_size = 16add # modific valorile in functie de rezultate
+batch_size = 16 # modific valorile in functie de rezultate
 
 # --- DATALOADERS ---
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
