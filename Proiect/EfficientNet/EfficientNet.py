@@ -53,9 +53,10 @@ def train_function():
             # accuracy = running_correct / running_samples * 100
             accuracy_metric.update(predicted, labels)
             pbar.set_description(
-                'Train [ E {}, L {:.4f}, A {:.4f}]'.format(epoch, float(loss) / (i + 1), accuracy_metric))
+                'Train [ E {}, L {:.4f}]'.format(epoch + 1, float(loss) / (i + 1)))
 
         accuracy = accuracy_metric.compute()
+        print('Epoch [{}], Accuracy: {:.2f}%'.format(epoch + 1, accuracy * 100))
         accuracy_metric.reset()
 
         writer.add_scalar("Loss/train", loss, epoch)
@@ -107,6 +108,12 @@ def val_function():
     f1_score = f1_score_metric.compute()
     confusion_matrix = confusion_matrix_metric.compute()
 
+    print('Loss: {:.4f}, Accuracy: {:.2f}%, Precision: {:.2f}%, Recall: {:.2f}%, F1_Score: {:.2f}% '.format(total_loss,
+                                                                                                        accuracy * 100,
+                                                                                                        precision * 100,
+                                                                                                        recall * 100,
+                                                                                                        f1_score * 100))
+
     accuracy_metric.reset()
     precision_metric.reset()
     recall_metric.reset()
@@ -114,12 +121,7 @@ def val_function():
     confusion_matrix_metric.reset()
 
     model.train()
-    print(f'Validation Loss: {total_loss:.4f}, '
-          f'Accuracy: {accuracy:.2f}, '
-          f'Precision: {precision:.2f}, '
-          f'Recall: {recall:.2f}, '
-          f'F1 Score: {f1_score:.2f}, '
-          f'Confusion Matrix: {confusion_matrix:.2f}')
+
 
 
 log_dir = "/tensorboard/test6EfficientNet"
