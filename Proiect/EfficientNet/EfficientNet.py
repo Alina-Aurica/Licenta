@@ -22,7 +22,7 @@ num_epochs = 50
 # -- TRAINING PART --
 def train_function():
     loss = 0
-    accuracy_metric = torchmetrics.Accuracy(task="multiclass", num_classes=classes).to(device)
+    accuracy_metric = torchmetrics.Accuracy(task="multiclass", num_classes=25).to(device)
     for epoch in range(num_epochs):
         # running_correct = 0
         # running_samples = 0
@@ -67,11 +67,11 @@ def train_function():
 def val_function():
     model.eval()
 
-    accuracy_metric = torchmetrics.Accuracy(task="multiclass", num_classes=classes).to(device)
-    precision_metric = torchmetrics.Precision(task="multiclass", num_classes=classes, average='macro').to(device)
-    recall_metric = torchmetrics.Recall(task="multiclass", num_classes=classes, average='macro').to(device)
-    f1_score_metric = torchmetrics.F1Score(task="multiclass", num_classes=classes, average='macro').to(device)
-    confusion_matrix_metric = torchmetrics.ConfusionMatrix(task="multiclass", num_classes=classes).to(device)
+    accuracy_metric = torchmetrics.Accuracy(task="multiclass", num_classes=25).to(device)
+    precision_metric = torchmetrics.Precision(task="multiclass", num_classes=25, average='macro').to(device)
+    recall_metric = torchmetrics.Recall(task="multiclass", num_classes=25, average='macro').to(device)
+    f1_score_metric = torchmetrics.F1Score(task="multiclass", num_classes=25, average='macro').to(device)
+    confusion_matrix_metric = torchmetrics.ConfusionMatrix(task="multiclass", num_classes=25).to(device)
 
     with torch.no_grad():
         total_loss = 0.0
