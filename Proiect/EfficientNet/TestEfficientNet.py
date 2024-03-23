@@ -1,72 +1,77 @@
 # import torch
 # import torchvision
+import torchmetrics
 import torchvision.models as models
 
 from LoadImagesEfficientNet import *
 from EfficientNet import *
 
-# iterator from the test Data Loader
-dataiter = iter(test_loader)
-images, labels = next(dataiter)
+model = models.efficientnet_b7(pretrained=False)
+model_path = 'efficientnet_model_3LR_Adam.pth'
+model.load_state_dict(torch.load(model_path))
 
-# print images - as a grid
-imshow(torchvision.utils.make_grid(images))
-# print the Ground Truth labels (the true labels) for images displayed
-print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(32)))
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
 
-# re-load the model
-model = models.efficientnet_b7(EfficientNet_B7_Weights.DEFAULT)
-model.load_state_dict(torch.load(model.state_dict(), 'efficientnet_model.pth')) # cred ca e okay asa
 
-# computes the outputes of images (which images?)
-outputs = model(images)
-# select the class with the highest output value - model's confidence
-_, predicted = torch.max(outputs, 1)
-# print the first 3 images in the batch
-print('Predicted: ', ' '.join(f'{classes[predicted[j]]:5s}'
-                              for j in range(4)))
+def test_function():
+    model.eval()
 
-# overall test accuracy - on test dataset
-# init 2 variables
-correct = 0
-total = 0
-# torch.no_grad() - since we're not training
-#                   we don't need to calculate
-#                   the gradients for our outputs
-with torch.no_grad():
-    # iterates over test Data Loader
-    for data in test_loader:
-        images, labels = data
-        # calculate outputs by running images through the network
-        outputs = model(images)
-        # the class with the highest energy is what we choose as prediction
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        # if predicted is equal to true labels then it's a TP
-        correct += (predicted == labels).sum().item()
+    accuracy_metric = torchmetrics.Accuracy(task="multiclass", num_classes=25).to(device)
+    precision_metric = torchmetrics.Precision(task="multiclass", num_classes=25, average='macro').to(device)
+    recall_metric = torchmetrics.Recall(task="multiclass", num_classes=25, average='macro').to(device)
+    f1_score_metric = torchmetrics.F1Score(task="multiclass", num_classes=25, average='macro').to(device)
 
-# print the accuracy of the network
-print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
+    dataiter = iter(test_loader)
+    images, labels = next(dataiter)
+    imshow(torchvision.utils.make_grid(images))
+    print('GroundTruth:', ' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size)))
 
-# class-wise accuracy
-# prepare to count predictions for each class
-correct_pred = {classname: 0 for classname in classes}
-total_pred = {classname: 0 for classname in classes}
-# again no gradients needed
-with torch.no_grad():
-    for data in test_loader:
-        images, labels = data
-        outputs = model(images)
-        _, predictions = torch.max(outputs, 1)
-        # collect the correct predictions for each class
-        for label, prediction in zip(labels, predictions):
-            if label == prediction:
-                correct_pred[classes[label]] += 1
-            total_pred[classes[label]] += 1
+    pbar = tqdm(enumerate(test_loader, 0),
+                unit='image',
+                total=len(test_loader),
+                smoothing=0)
 
-# print accuracy for each class
-for classname, correct_count in correct_pred.items():
-    accuracy = 100 * float(correct_count) / total_pred[classname]
-    print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
+    # for each class
+    correct_pred = {classname: 0 for classname in classes}
+    total_pred = {classname: 0 for classname in classes}
+    # Testing loop
+    with torch.no_grad():
+        for i, data in pbar:
+            images, labels = data[0].to(device), data[1].to(device)
+            outputs = model(images)
+            _, predicted = torch.max(outputs, 1)
 
-# PRECISION, RECALL AND ERROR RATES
+            # Update metrics
+            accuracy_metric.update(predicted, labels)
+            precision_metric.update(predicted, labels)
+            recall_metric.update(predicted, labels)
+            f1_score_metric.update(predicted, labels)
+
+            for label, prediction in zip(labels, predicted):
+                if label == prediction:
+                    correct_pred[classes[label]] += 1
+                total_pred[classes[label]] += 1
+
+    accuracy = accuracy_metric.compute() * 100
+    precision = precision_metric.compute() * 100
+    recall = recall_metric.compute() * 100
+    f1_score = f1_score_metric.compute() * 100
+
+    accuracy_metric.reset()
+    precision_metric.reset()
+    recall_metric.reset()
+    f1_score_metric.reset()
+
+    print(f'Accuracy: {accuracy:.2f}')
+    print(f'Precision: {precision:.2f}')
+    print(f'Recall: {recall:.2f}')
+    print(f'F1 Score: {f1_score:.2f}')
+
+    # print accuracy for each class
+    for classname, correct_count in correct_pred.items():
+        accuracy = 100 * float(correct_count) / total_pred[classname]
+        print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
+
+
+test_function()

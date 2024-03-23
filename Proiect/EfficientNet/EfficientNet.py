@@ -15,8 +15,9 @@ model = model.to(device)
 criterion = torch.nn.CrossEntropyLoss()
 # aici sa vad de ce optimizer pot alege
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+# optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
-num_epochs = 50
+num_epochs = 20
 
 
 # -- TRAINING PART --
