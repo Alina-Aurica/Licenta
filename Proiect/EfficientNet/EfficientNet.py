@@ -19,10 +19,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 augmentation_transforms = transforms.Compose([
     transforms.RandomHorizontalFlip(),
-    # transforms.RandomRotation(20),
-    # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+    transforms.RandomRotation(20),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
 ])
-
 
 num_epochs = 20
 
@@ -118,10 +117,10 @@ def val_function():
     confusion_matrix = confusion_matrix_metric.compute()
 
     print('Loss: {:.4f}, Accuracy: {:.2f}%, Precision: {:.2f}%, Recall: {:.2f}%, F1_Score: {:.2f}% '.format(total_loss,
-                                                                                                        accuracy * 100,
-                                                                                                        precision * 100,
-                                                                                                        recall * 100,
-                                                                                                        f1_score * 100))
+                                                                                                            accuracy * 100,
+                                                                                                            precision * 100,
+                                                                                                            recall * 100,
+                                                                                                            f1_score * 100))
 
     accuracy_metric.reset()
     precision_metric.reset()
@@ -130,7 +129,6 @@ def val_function():
     confusion_matrix_metric.reset()
 
     model.train()
-
 
 
 log_dir = "/tensorboard/test6EfficientNet"

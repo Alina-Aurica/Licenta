@@ -1,10 +1,11 @@
-# import torch
 # import torchvision
+import torch
+from tqdm import tqdm
 import torchmetrics
 import torchvision.models as models
 
 from LoadImagesEfficientNet import *
-from EfficientNet import *
+# from EfficientNet import *
 
 model = models.efficientnet_b7(pretrained=False)
 model_path = 'efficientnet_model_3LR_Adam.pth'
