@@ -17,6 +17,13 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 # optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
+augmentation_transforms = transforms.Compose([
+    transforms.RandomHorizontalFlip(),
+    # transforms.RandomRotation(20),
+    # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+])
+
+
 num_epochs = 20
 
 
@@ -35,6 +42,7 @@ def train_function():
         model.train()
         for i, data in pbar:
             inputs, labels = data
+            inputs = augmentation_transforms(inputs)
 
             inputs = inputs.to(device)
             labels = labels.to(device)
