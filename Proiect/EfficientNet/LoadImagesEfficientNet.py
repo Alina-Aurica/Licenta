@@ -52,11 +52,11 @@ val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # --- CLASSES ---
-classes = ('BEANS', 'CAKE', 'CANDY', 'CEREAL', 'CHIPS',
-           'CHOCOLATE', 'COFFEE', 'CORN', 'FISH', 'FLOUR',
-           'HONEY', 'JAM', 'JUICE', 'MILK', 'NUTS',
-           'OIL', 'PASTA', 'RICE', 'SODA', 'SPICES',
-           'SUGAR', 'TEA', 'TOMATO_SAUCE', 'VINEGAR', 'WATER'
+classes = ('CANDY', 'JUICE', 'VINEGAR', 'OIL', 'CHOCOLATE',
+           'PASTA', 'RICE', 'MILK', 'SPICES', 'HONEY',
+           'JAM', 'NUTS', 'CHIPS', 'SODA', 'COFFEE',
+           'BEANS', 'TEA', 'CORN', 'CEREAL', 'CAKE',
+           'SUGAR', 'WATER', 'FLOUR', 'TOMATO_SAUCE', 'FISH'
            )
 
 # function to show an image
